@@ -16,7 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Banco;
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Conta;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Usuario;
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.BancoRepository;
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.ContaRepository;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.UsuarioRepository;
 
 @RestController // Esta anotação é a junção de @Controller e @ResponseBody
@@ -25,6 +29,12 @@ public class UsuarioController {
 
 	@Autowired
 	UsuarioRepository repository;
+
+	@Autowired
+	ContaRepository contaRepository;
+	
+	@Autowired
+	BancoRepository bancoRepository;
 
 	@GetMapping
 	public ResponseEntity<?> listar() {
@@ -44,9 +54,10 @@ public class UsuarioController {
 	public ResponseEntity<?> buscar(@PathVariable Long id) {
 
 		Optional<Usuario> usuario = repository.findById(id);
-		
-		if(usuario.isPresent()) return ResponseEntity.ok(usuario);
-		
+
+		if (usuario.isPresent())
+			return ResponseEntity.ok(usuario);
+
 		return ResponseEntity.notFound().build();
 
 	}
@@ -58,7 +69,7 @@ public class UsuarioController {
 
 		if (atual.isPresent()) {
 
-			BeanUtils.copyProperties(atualizado, atual.get(), "id");
+			BeanUtils.copyProperties(atualizado, atual.get(), "id", "contas");
 
 			return ResponseEntity.ok(repository.save(atual.get()));
 
@@ -83,6 +94,54 @@ public class UsuarioController {
 
 		}
 
+	}
+
+	@GetMapping("/{id}/contas")
+	public ResponseEntity<?> listarContas(@PathVariable Long id) {
+
+		Optional<Usuario> usuario = repository.findById(id);
+
+		if (usuario.isPresent())
+			return ResponseEntity.ok(usuario.get().getContas());
+
+		return ResponseEntity.notFound().build();
+
+	}
+	
+	@PutMapping("/{id}/contas")
+	public ResponseEntity<?> adicionarConta(@PathVariable Long id, @RequestBody Conta conta) {
+		
+		Optional<Usuario> usuario = repository.findById(id);
+		Optional<Banco> banco = bancoRepository.findById(conta.getBanco().getId());
+		
+		if(usuario.isPresent() && banco.isPresent()) {
+			
+			conta.setDono(usuario.get());
+			conta.setBanco(banco.get());
+			
+			return ResponseEntity.ok(contaRepository.save(conta));
+			
+		}
+		
+		return ResponseEntity.notFound().build();
+		
+	}
+	
+	@DeleteMapping("/{id}/contas/{conta}")
+	public ResponseEntity<?> removerConta(@PathVariable Long id, @PathVariable Long conta) {
+		
+		try {
+
+			contaRepository.deleteById(conta);
+
+			return ResponseEntity.noContent().build();
+
+		} catch (EmptyResultDataAccessException e) {
+
+			return ResponseEntity.notFound().build();
+
+		}
+		
 	}
 
 }

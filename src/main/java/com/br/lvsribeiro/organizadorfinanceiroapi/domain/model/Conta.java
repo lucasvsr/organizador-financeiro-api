@@ -1,44 +1,47 @@
 package com.br.lvsribeiro.organizadorfinanceiroapi.domain.model;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class Usuario {
+public class Conta {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@JsonIgnore
+	@ManyToOne
+	@JoinColumn(name = "dono")
+	private Usuario dono;
+	
+	@ManyToOne
+	@JoinColumn(name = "banco")
+	private Banco banco;
+	
 	@Column(nullable = false)
-	private String nome;
+	private BigDecimal saldo;
 	
-	@Column(name = "dt_nascimento")
-	private LocalDate dtNascimento;
-	
-	@Column(nullable = false)
-	private String email;
-	
-	@Column(nullable = false)
-	private String senha;
-	
-	@Column(name = "dt_criacao")
 	@CreationTimestamp
+	@Column(name = "dt_criacao")
 	private LocalDateTime dtCriacao;
 	
-	@OneToMany(mappedBy = "dono")
-	private List<Conta> contas;
-	
+	@UpdateTimestamp
+	@Column(name = "dt_atualizacao")
+	private LocalDateTime dtAtualizacao;
 
 	public Long getId() {
 		return id;
@@ -48,36 +51,28 @@ public class Usuario {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public Usuario getDono() {
+		return dono;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setDono(Usuario dono) {
+		this.dono = dono;
 	}
 
-	public LocalDate getDtNascimento() {
-		return dtNascimento;
+	public Banco getBanco() {
+		return banco;
 	}
 
-	public void setDtNascimento(LocalDate dtNascimento) {
-		this.dtNascimento = dtNascimento;
+	public void setBanco(Banco banco) {
+		this.banco = banco;
 	}
 
-	public String getEmail() {
-		return email;
+	public BigDecimal getSaldo() {
+		return saldo;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getSenha() {
-		return senha;
-	}
-
-	public void setSenha(String senha) {
-		this.senha = senha;
+	public void setSaldo(BigDecimal saldo) {
+		this.saldo = saldo;
 	}
 
 	public LocalDateTime getDtCriacao() {
@@ -88,12 +83,12 @@ public class Usuario {
 		this.dtCriacao = dtCriacao;
 	}
 
-	public List<Conta> getContas() {
-		return contas;
+	public LocalDateTime getDtAtualizacao() {
+		return dtAtualizacao;
 	}
 
-	public void setContas(List<Conta> contas) {
-		this.contas = contas;
+	public void setDtAtualizacao(LocalDateTime dtAtualizacao) {
+		this.dtAtualizacao = dtAtualizacao;
 	}
 
 	@Override
@@ -113,7 +108,7 @@ public class Usuario {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Usuario other = (Usuario) obj;
+		Conta other = (Conta) obj;
 		if (dtCriacao == null) {
 			if (other.dtCriacao != null)
 				return false;
