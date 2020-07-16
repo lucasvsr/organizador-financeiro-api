@@ -9,27 +9,33 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.br.lvsribeiro.organizadorfinanceiroapi.domain.enums.TipoBancoEnum;
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.enums.TipoCategoriaEnum;
 
 @Entity
-public class Banco {
+public class Categoria {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(nullable = false)
-	private String nome;
+	private String descricao;
 	
 	@Enumerated(EnumType.STRING)
-	private TipoBancoEnum tipo;
+	private TipoCategoriaEnum tipo;
 	
-	@Column(name = "dt_cadastro")
+	@Column(name = "dt_criacao")
 	@CreationTimestamp
-	private LocalDateTime dtCadastro;
+	private LocalDateTime dtCriacao;
+	
+	@OneToOne
+	@JoinColumn(name = "usuario_criador", nullable = false)
+	private Usuario criador;
 
 	public Long getId() {
 		return id;
@@ -39,35 +45,43 @@ public class Banco {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public String getDescricao() {
+		return descricao;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 
-	public TipoBancoEnum getTipo() {
+	public TipoCategoriaEnum getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(TipoBancoEnum tipo) {
+	public void setTipo(TipoCategoriaEnum tipo) {
 		this.tipo = tipo;
 	}
 
-	public LocalDateTime getDtCadastro() {
-		return dtCadastro;
+	public LocalDateTime getDtCriacao() {
+		return dtCriacao;
 	}
 
-	public void setDtCadastro(LocalDateTime dtCadastro) {
-		this.dtCadastro = dtCadastro;
+	public void setDtCriacao(LocalDateTime dtCriacao) {
+		this.dtCriacao = dtCriacao;
+	}
+
+	public Usuario getCriador() {
+		return criador;
+	}
+
+	public void setCriador(Usuario criador) {
+		this.criador = criador;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((dtCadastro == null) ? 0 : dtCadastro.hashCode());
+		result = prime * result + ((dtCriacao == null) ? 0 : dtCriacao.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
@@ -80,11 +94,11 @@ public class Banco {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Banco other = (Banco) obj;
-		if (dtCadastro == null) {
-			if (other.dtCadastro != null)
+		Categoria other = (Categoria) obj;
+		if (dtCriacao == null) {
+			if (other.dtCriacao != null)
 				return false;
-		} else if (!dtCadastro.equals(other.dtCadastro))
+		} else if (!dtCriacao.equals(other.dtCriacao))
 			return false;
 		if (id == null) {
 			if (other.id != null)
@@ -93,6 +107,5 @@ public class Banco {
 			return false;
 		return true;
 	}
-	
 
 }

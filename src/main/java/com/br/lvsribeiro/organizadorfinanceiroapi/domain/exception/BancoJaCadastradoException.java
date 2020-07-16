@@ -8,7 +8,7 @@ public class BancoJaCadastradoException extends Exception {
 	
 	public BancoJaCadastradoException(Banco banco) {
 		
-		super(String.format("Banco %s já cadastrado com o tipo %s", banco.getNome(), banco.getTipo()));
+		super(String.format("Banco %s com o tipo %s já foi cadastrado", banco.getNome(), banco.getTipo()));
 		
 	}
 
