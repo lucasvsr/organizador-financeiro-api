@@ -16,73 +16,99 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Usuario;
-import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.UsuarioRepository;
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.exception.BancoJaCadastradoException;
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Banco;
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.BancoRepository;
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.service.BancoService;
 
 @RestController // Esta anotação é a junção de @Controller e @ResponseBody
-@RequestMapping(value = "/usuarios")
-public class UsuarioController {
-
+@RequestMapping(value = "/bancos")
+public class BancoController {
+	
 	@Autowired
-	UsuarioRepository repository;
-
+	BancoRepository repository;
+	
+	@Autowired
+	BancoService service;
+	
 	@GetMapping
 	public ResponseEntity<?> listar() {
-
+		
 		return ResponseEntity.ok(repository.findAll());
-
+		
 	}
-
+	
 	@PostMapping
-	public ResponseEntity<?> salvar(@RequestBody Usuario usuario) {
-
-		return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(usuario));
-
+	public ResponseEntity<?> salvar(@RequestBody Banco banco) {
+		
+		try { 
+		
+			return ResponseEntity.status(HttpStatus.CREATED)
+							 	 .body(service.salvar(banco));
+			
+		} catch (Exception e) {
+			
+			
+			
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+								 .body(e.getMessage());
+			
+		}
+		
 	}
-
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> buscar(@PathVariable Long id) {
-
-		Optional<Usuario> usuario = repository.findById(id);
+		
+		Optional<Banco> usuario = repository.findById(id);
 		
 		if(usuario.isPresent()) return ResponseEntity.ok(usuario);
 		
 		return ResponseEntity.notFound().build();
-
+		
 	}
-
+	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Usuario atualizado) {
-
-		Optional<Usuario> atual = repository.findById(id);
-
-		if (atual.isPresent()) {
-
-			BeanUtils.copyProperties(atualizado, atual.get(), "id");
-
-			return ResponseEntity.ok(repository.save(atual.get()));
-
+	public ResponseEntity<?> atualizar(@PathVariable Long id,
+									   @RequestBody Banco atualizado) {
+		
+		Optional<Banco> atual = repository.findById(id);
+		
+		if(atual.isPresent()) {
+			
+			BeanUtils.copyProperties(atualizado, atual.get(), "id", "dtCadastro");
+			
+			try {
+				
+				return ResponseEntity.ok(service.salvar(atual.get()));
+				
+			} catch (BancoJaCadastradoException e) {
+				
+				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+				
+			}
+			
 		}
-
+		
 		return ResponseEntity.notFound().build();
-
+		
 	}
-
+	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> excluir(@PathVariable Long id) {
-
+		
 		try {
-
+			
 			repository.deleteById(id);
-
+			
 			return ResponseEntity.noContent().build();
-
+			
 		} catch (EmptyResultDataAccessException e) {
-
+			
 			return ResponseEntity.notFound().build();
-
+			
 		}
-
+		
 	}
 
 }
