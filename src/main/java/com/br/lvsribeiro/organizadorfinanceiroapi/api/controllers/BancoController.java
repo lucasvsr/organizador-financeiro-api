@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.exception.BancoJaCadastradoException;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Banco;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.BancoRepository;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.service.BancoService;
@@ -75,9 +76,17 @@ public class BancoController {
 		
 		if(atual.isPresent()) {
 			
-			BeanUtils.copyProperties(atualizado, atual.get(), "id");
+			BeanUtils.copyProperties(atualizado, atual.get(), "id", "dtCadastro");
 			
-			return ResponseEntity.ok(repository.save(atual.get()));
+			try {
+				
+				return ResponseEntity.ok(service.salvar(atual.get()));
+				
+			} catch (BancoJaCadastradoException e) {
+				
+				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+				
+			}
 			
 		}
 		
