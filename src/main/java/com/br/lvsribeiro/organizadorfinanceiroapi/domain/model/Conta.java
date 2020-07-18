@@ -2,14 +2,18 @@ package com.br.lvsribeiro.organizadorfinanceiroapi.domain.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -42,6 +46,10 @@ public class Conta {
 	@UpdateTimestamp
 	@Column(name = "dt_atualizacao")
 	private LocalDateTime dtAtualizacao;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "conta", fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<Transacao> transacoes;
 
 	public Long getId() {
 		return id;
@@ -90,6 +98,16 @@ public class Conta {
 	public void setDtAtualizacao(LocalDateTime dtAtualizacao) {
 		this.dtAtualizacao = dtAtualizacao;
 	}
+	
+	
+
+	public List<Transacao> getTransacoes() {
+		return transacoes;
+	}
+
+	public void setTransacoes(List<Transacao> transacoes) {
+		this.transacoes = transacoes;
+	}
 
 	@Override
 	public int hashCode() {
@@ -121,5 +139,7 @@ public class Conta {
 			return false;
 		return true;
 	}
+
+	
 
 }

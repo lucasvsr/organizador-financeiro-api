@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.exception.BancoJaCadastradoException;
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.exception.EntidadeNaoEncontradaException;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Banco;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.BancoRepository;
 
@@ -20,6 +21,13 @@ public class BancoService {
 			
 		return repository.save(banco);
 			
+	}
+
+	public Banco buscar(Long id) {
+		
+		return repository.findById(id).orElseThrow(
+				 () -> new EntidadeNaoEncontradaException("Banco não encontrado"));
+		
 	}
 
 }

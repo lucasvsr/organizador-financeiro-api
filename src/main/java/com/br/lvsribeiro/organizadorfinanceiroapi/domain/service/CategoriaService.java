@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.exception.CategoriaJaCadastradaException;
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.exception.EntidadeNaoEncontradaException;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Categoria;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Usuario;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.CategoriaRepository;
@@ -13,10 +14,10 @@ import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.UsuarioRepos
 public class CategoriaService {
 	
 	@Autowired
-	CategoriaRepository repository;
+	private CategoriaRepository repository;
 	
 	@Autowired
-	UsuarioRepository usuarioRepository;
+	private UsuarioRepository usuarioRepository;
 	
 	public Categoria salvar(Categoria categoria) throws CategoriaJaCadastradaException {
 		
@@ -33,6 +34,13 @@ public class CategoriaService {
 			
 		return repository.save(categoria);
 			
+	}
+
+	public Categoria buscar(Long id) {
+		
+		return repository.findById(id).orElseThrow(
+				 () -> new EntidadeNaoEncontradaException("Categoria não encontrada"));
+		
 	}
 
 }

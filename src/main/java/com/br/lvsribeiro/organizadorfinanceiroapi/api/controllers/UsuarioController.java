@@ -1,10 +1,9 @@
 package com.br.lvsribeiro.organizadorfinanceiroapi.api.controllers;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,14 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Banco;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Conta;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Usuario;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.BancoRepository;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.ContaRepository;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.UsuarioRepository;
+import com.br.lvsribeiro.organizadorfinanceiroapi.domain.service.UsuarioService;
 
 @RestController // Esta anotação é a junção de @Controller e @ResponseBody
 @RequestMapping(value = "/usuarios")
@@ -29,6 +29,9 @@ public class UsuarioController {
 
 	@Autowired
 	UsuarioRepository repository;
+	
+	@Autowired
+	UsuarioService service;
 
 	@Autowired
 	ContaRepository contaRepository;
@@ -37,110 +40,68 @@ public class UsuarioController {
 	BancoRepository bancoRepository;
 
 	@GetMapping
-	public ResponseEntity<?> listar() {
+	public List<Usuario> listar() {
 
-		return ResponseEntity.ok(repository.findAll());
+		return repository.findAll();
 
 	}
 
 	@PostMapping
-	public ResponseEntity<?> salvar(@RequestBody Usuario usuario) {
+	public Usuario salvar(@RequestBody Usuario usuario) {
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(usuario));
+		return repository.save(usuario);
 
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<?> buscar(@PathVariable Long id) {
+	public Usuario buscar(@PathVariable Long id) {
 
-		Optional<Usuario> usuario = repository.findById(id);
-
-		if (usuario.isPresent())
-			return ResponseEntity.ok(usuario);
-
-		return ResponseEntity.notFound().build();
+		return service.buscar(id);
 
 	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Usuario atualizado) {
 
-		Optional<Usuario> atual = repository.findById(id);
+		Usuario atual = service.buscar(id);
 
-		if (atual.isPresent()) {
+		BeanUtils.copyProperties(atualizado, atual, "id", "contas");
 
-			BeanUtils.copyProperties(atualizado, atual.get(), "id", "contas");
-
-			return ResponseEntity.ok(repository.save(atual.get()));
-
-		}
-
-		return ResponseEntity.notFound().build();
-
+		return ResponseEntity.ok(repository.save(atual));
+		
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> excluir(@PathVariable Long id) {
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void excluir(@PathVariable Long id) {
 
-		try {
-
-			repository.deleteById(id);
-
-			return ResponseEntity.noContent().build();
-
-		} catch (EmptyResultDataAccessException e) {
-
-			return ResponseEntity.notFound().build();
-
-		}
+		repository.delete(service.buscar(id));
 
 	}
 
 	@GetMapping("/{id}/contas")
-	public ResponseEntity<?> listarContas(@PathVariable Long id) {
+	@ResponseStatus(HttpStatus.OK)
+	public List<Conta> listarContas(@PathVariable Long id) {
 
-		Optional<Usuario> usuario = repository.findById(id);
+		Usuario usuario = service.buscar(id);
 
-		if (usuario.isPresent())
-			return ResponseEntity.ok(usuario.get().getContas());
-
-		return ResponseEntity.notFound().build();
+		return usuario.getContas();
 
 	}
 	
 	@PutMapping("/{id}/contas")
-	public ResponseEntity<?> adicionarConta(@PathVariable Long id, @RequestBody Conta conta) {
+	@ResponseStatus(HttpStatus.OK)
+	public Conta adicionarConta(@PathVariable Long id, @RequestBody Conta conta) {
 		
-		Optional<Usuario> usuario = repository.findById(id);
-		Optional<Banco> banco = bancoRepository.findById(conta.getBanco().getId());
-		
-		if(usuario.isPresent() && banco.isPresent()) {
-			
-			conta.setDono(usuario.get());
-			conta.setBanco(banco.get());
-			
-			return ResponseEntity.ok(contaRepository.save(conta));
-			
-		}
-		
-		return ResponseEntity.notFound().build();
+		return service.addConta(conta, id);
 		
 	}
 	
 	@DeleteMapping("/{id}/contas/{conta}")
-	public ResponseEntity<?> removerConta(@PathVariable Long id, @PathVariable Long conta) {
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void removerConta(@PathVariable Long id, @PathVariable Long conta) {
 		
-		try {
-
-			contaRepository.deleteById(conta);
-
-			return ResponseEntity.noContent().build();
-
-		} catch (EmptyResultDataAccessException e) {
-
-			return ResponseEntity.notFound().build();
-
-		}
+		service.removerConta(conta, id);
 		
 	}
 
