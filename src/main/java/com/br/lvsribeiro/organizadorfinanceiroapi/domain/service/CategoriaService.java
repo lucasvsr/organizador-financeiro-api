@@ -42,5 +42,11 @@ public class CategoriaService {
 				 () -> new EntidadeNaoEncontradaException("Categoria não encontrada"));
 		
 	}
+	
+	public void remover(Long id) {
+		
+		repository.delete(buscar(id));
+		
+	}
 
 }

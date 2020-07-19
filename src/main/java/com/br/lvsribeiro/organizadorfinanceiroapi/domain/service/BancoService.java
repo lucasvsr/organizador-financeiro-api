@@ -29,5 +29,11 @@ public class BancoService {
 				 () -> new EntidadeNaoEncontradaException("Banco não encontrado"));
 		
 	}
+	
+	public void remover(Long id) {
+		
+		repository.delete(buscar(id));
+		
+	}
 
 }

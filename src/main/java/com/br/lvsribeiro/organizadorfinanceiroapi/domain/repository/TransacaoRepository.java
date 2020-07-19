@@ -15,7 +15,7 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
 
 	@Query("SELECT t FROM Transacao t "
 		 + "WHERE t.conta.dono.id = :usuario "
-		 + "ORDER BY t.conta, t.dtCadastro DESC")
+		 + "ORDER BY t.dtTransacao DESC")
 	List<Transacao> findByUsuario(Long usuario);
 
 }

@@ -24,6 +24,13 @@ public class TransacaoService {
 
 	@Autowired
 	private TransacaoRepository repository;
+	
+	public Transacao buscar(Long id) {
+
+		return repository.findById(id)
+				.orElseThrow(() -> new EntidadeNaoEncontradaException("Transação não encontrada"));
+
+	}
 
 	public Transacao salvar(Transacao transacao) {
 
@@ -44,8 +51,7 @@ public class TransacaoService {
 
 		Transacao t = buscar(id);
 		Categoria categoriaSalva = t.getCategoria();
-		Categoria categoriaNova = transacao.getCategoria().getId() == null ? null
-				: categoriaService.buscar(transacao.getCategoria().getId());
+		Categoria categoriaNova = transacao.getCategoria() == null ? null : categoriaService.buscar(transacao.getCategoria().getId());
 		BigDecimal saldoAnterior = recuperarSaldoAnterior(t);
 
 		t.setDescricao(transacao.getDescricao() == null ? t.getDescricao() : transacao.getDescricao());
@@ -56,22 +62,22 @@ public class TransacaoService {
 
 		if (categoriaSalva.getId() != categoriaNova.getId()) {
 
-			if (categoriaNova.getTipo() == TipoCategoriaEnum.GASTO) {
+			if (categoriaNova.getTipo() == TipoCategoriaEnum.SAIDA) {
 
 				t.setValor(transacao.getValor() == null ? t.getValor() : transacao.getValor());
-				t.getConta().setSaldo(atualizarSaldo(saldoAnterior, TipoCategoriaEnum.GASTO, transacao.getValor()));
+				t.getConta().setSaldo(atualizarSaldo(saldoAnterior, TipoCategoriaEnum.SAIDA, transacao.getValor()));
 
 			} else {
 
 				t.setValor(transacao.getValor() == null ? t.getValor() : transacao.getValor());
-				t.getConta().setSaldo(atualizarSaldo(saldoAnterior, TipoCategoriaEnum.RENDA, transacao.getValor()));
+				t.getConta().setSaldo(atualizarSaldo(saldoAnterior, TipoCategoriaEnum.ENTRADA, transacao.getValor()));
 
 			}
 
 		}
-		
-		if(t.getValor() != transacao.getValor()) {
-			
+
+		if (t.getValor() != transacao.getValor()) {
+
 			t.setValor(transacao.getValor());
 			t.getConta().setSaldo(atualizarSaldo(saldoAnterior, t.getCategoria().getTipo(), transacao.getValor()));
 		}
@@ -87,14 +93,14 @@ public class TransacaoService {
 		BigDecimal saldo = transacao.getConta().getSaldo();
 		BigDecimal valor = transacao.getValor();
 
-		if (transacao.getCategoria().getTipo() == TipoCategoriaEnum.GASTO) {
+		if (transacao.getCategoria().getTipo() == TipoCategoriaEnum.SAIDA) {
 
-			conta.setSaldo(atualizarSaldo(saldo, TipoCategoriaEnum.RENDA, valor));
+			conta.setSaldo(atualizarSaldo(saldo, TipoCategoriaEnum.ENTRADA, valor));
 			contaService.salvar(conta);
 
 		} else {
 
-			conta.setSaldo(atualizarSaldo(saldo, TipoCategoriaEnum.GASTO, valor));
+			conta.setSaldo(atualizarSaldo(saldo, TipoCategoriaEnum.SAIDA, valor));
 			contaService.salvar(conta);
 
 		}
@@ -103,40 +109,34 @@ public class TransacaoService {
 
 	}
 
-	public Transacao buscar(Long id) {
-
-		return repository.findById(id)
-				.orElseThrow(() -> new EntidadeNaoEncontradaException("Transação não encontrada"));
-
-	}
+	
 
 	private BigDecimal atualizarSaldo(BigDecimal saldo, TipoCategoriaEnum tipo, BigDecimal valor) {
 
 		switch (tipo) {
 
-			case GASTO: {
+		case SAIDA: {
 
-				return saldo.subtract(valor);
-			}
+			return saldo.subtract(valor);
+		}
 
-			case RENDA: {
+		case ENTRADA: {
 
-				return saldo.add(valor);
+			return saldo.add(valor);
 
-			}
+		}
 		}
 
 		return valor;
 
 	}
-	
+
 	private BigDecimal recuperarSaldoAnterior(Transacao transacao) {
 
-		if (transacao.getCategoria().getTipo() == TipoCategoriaEnum.GASTO) return atualizarSaldo(transacao.getConta().getSaldo(),
-																								 TipoCategoriaEnum.RENDA,
-																								 transacao.getValor());
+		if (transacao.getCategoria().getTipo() == TipoCategoriaEnum.SAIDA)
+			return atualizarSaldo(transacao.getConta().getSaldo(), TipoCategoriaEnum.ENTRADA, transacao.getValor());
 
-		return atualizarSaldo(transacao.getConta().getSaldo(), TipoCategoriaEnum.GASTO, transacao.getValor());
+		return atualizarSaldo(transacao.getConta().getSaldo(), TipoCategoriaEnum.SAIDA, transacao.getValor());
 
 	}
 

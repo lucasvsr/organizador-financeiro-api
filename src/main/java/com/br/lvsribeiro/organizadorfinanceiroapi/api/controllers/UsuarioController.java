@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Conta;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Usuario;
-import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.BancoRepository;
-import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.ContaRepository;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.UsuarioRepository;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.service.UsuarioService;
 
@@ -33,12 +30,6 @@ public class UsuarioController {
 	@Autowired
 	UsuarioService service;
 
-	@Autowired
-	ContaRepository contaRepository;
-	
-	@Autowired
-	BancoRepository bancoRepository;
-
 	@GetMapping
 	public List<Usuario> listar() {
 
@@ -47,9 +38,10 @@ public class UsuarioController {
 	}
 
 	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
 	public Usuario salvar(@RequestBody Usuario usuario) {
 
-		return repository.save(usuario);
+		return service.salvar(usuario);
 
 	}
 
@@ -61,13 +53,14 @@ public class UsuarioController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Usuario atualizado) {
+	@ResponseStatus(HttpStatus.OK)
+	public Usuario atualizar(@PathVariable Long id, @RequestBody Usuario atualizado) {
 
 		Usuario atual = service.buscar(id);
 
 		BeanUtils.copyProperties(atualizado, atual, "id", "contas");
 
-		return ResponseEntity.ok(repository.save(atual));
+		return service.salvar(atual);
 		
 	}
 

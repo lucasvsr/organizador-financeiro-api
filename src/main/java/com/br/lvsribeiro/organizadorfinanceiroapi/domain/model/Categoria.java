@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.enums.TipoCategoriaEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Categoria {
@@ -35,6 +36,7 @@ public class Categoria {
 	
 	@OneToOne
 	@JoinColumn(name = "usuario_criador", nullable = false)
+	@JsonIgnore
 	private Usuario criador;
 
 	public Long getId() {
