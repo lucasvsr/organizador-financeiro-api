@@ -8,7 +8,6 @@ import com.br.lvsribeiro.organizadorfinanceiroapi.domain.exception.EntidadeNaoEn
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Categoria;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.model.Usuario;
 import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.CategoriaRepository;
-import com.br.lvsribeiro.organizadorfinanceiroapi.domain.repository.UsuarioRepository;
 
 @Service
 public class CategoriaService {
@@ -17,11 +16,11 @@ public class CategoriaService {
 	private CategoriaRepository repository;
 	
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private UsuarioService usuarioService;
 	
 	public Categoria salvar(Categoria categoria) throws CategoriaJaCadastradaException {
 		
-		Usuario criador = usuarioRepository.findById(categoria.getCriador().getId()).get();
+		Usuario criador = usuarioService.buscar(categoria.getCriador().getId());
 		
 		categoria.setCriador(criador);
 		
