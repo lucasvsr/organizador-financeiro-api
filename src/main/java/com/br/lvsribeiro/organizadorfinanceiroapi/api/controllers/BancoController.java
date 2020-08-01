@@ -56,7 +56,7 @@ public class BancoController {
 	
 	@PutMapping("/{id}")
 	public Banco atualizar(@PathVariable Long id,
-									   @RequestBody Banco atualizado) throws BancoJaCadastradoException {
+						   @RequestBody Banco atualizado) throws BancoJaCadastradoException {
 		
 		Banco atual = service.buscar(id);
 		
