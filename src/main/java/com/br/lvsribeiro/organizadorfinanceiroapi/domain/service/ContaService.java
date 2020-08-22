@@ -46,7 +46,7 @@ public class ContaService {
 			
 		} else {
 			
-			throw new ContaInformadaNaoPertenceAoUsuarioException("A conta informada não pertence ao usuário");
+			throw new ContaInformadaNaoPertenceAoUsuarioException();
 		}
 		
 		

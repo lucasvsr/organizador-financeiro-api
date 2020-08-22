@@ -6,7 +6,7 @@ create table categoria
 	descricao varchar(40) not null,
 	tipo varchar(20) not null,
 	dt_criacao timestamp,
-	usuario_criador bigint not null
+	usuario_criador bigint
 		constraint categoria_usuario_id_fk
 			references usuario
 );

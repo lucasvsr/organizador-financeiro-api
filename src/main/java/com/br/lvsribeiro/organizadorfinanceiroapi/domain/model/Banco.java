@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -21,9 +22,12 @@ public class Banco {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotBlank
 	@Column(nullable = false)
 	private String nome;
 	
+	/**TODO: CRIAR ENUM PARA VALIDAÇÃO DO TIPO DE BANCO
+	 * **/
 	@Enumerated(EnumType.STRING)
 	private TipoBancoEnum tipo;
 	

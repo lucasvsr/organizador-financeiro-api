@@ -2,6 +2,8 @@ package com.br.lvsribeiro.organizadorfinanceiroapi.api.controllers;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,7 +41,7 @@ public class UsuarioController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Usuario salvar(@RequestBody Usuario usuario) {
+	public Usuario salvar(@RequestBody @Valid Usuario usuario) {
 
 		return service.salvar(usuario);
 
@@ -84,7 +86,7 @@ public class UsuarioController {
 	
 	@PutMapping("/{id}/contas")
 	@ResponseStatus(HttpStatus.OK)
-	public Conta adicionarConta(@PathVariable Long id, @RequestBody Conta conta) {
+	public Conta adicionarConta(@PathVariable Long id, @RequestBody @Valid Conta conta) {
 		
 		return service.addConta(conta, id);
 		

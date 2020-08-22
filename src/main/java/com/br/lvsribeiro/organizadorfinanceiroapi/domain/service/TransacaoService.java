@@ -58,7 +58,7 @@ public class TransacaoService {
 		t.setDtTransacao(transacao.getDtTransacao() == null ? t.getDtTransacao() : transacao.getDtTransacao());
 
 		if (t.getConta().getId() != transacao.getConta().getId())
-			throw new ContaDiferenteCadastradaException("Não é possível alterar a conta de uma transação já salva");
+			throw new ContaDiferenteCadastradaException();
 
 		if (categoriaSalva.getId() != categoriaNova.getId()) {
 

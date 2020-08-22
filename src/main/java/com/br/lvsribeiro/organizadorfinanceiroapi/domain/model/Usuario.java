@@ -10,6 +10,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -22,15 +25,19 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotBlank
 	@Column(nullable = false)
 	private String nome;
 	
+	@NotNull
 	@Column(name = "dt_nascimento")
 	private LocalDate dtNascimento;
 	
+	@Email
 	@Column(nullable = false, unique = true)
 	private String email;
 	
+	@NotBlank
 	@Column(nullable = false)
 	private String senha;
 	

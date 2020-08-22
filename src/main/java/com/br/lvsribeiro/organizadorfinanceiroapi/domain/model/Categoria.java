@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -24,9 +25,13 @@ public class Categoria {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotBlank
 	@Column(nullable = false)
 	private String descricao;
 	
+	/*
+	 * TODO: Criar validação aqui
+	 */
 	@Enumerated(EnumType.STRING)
 	private TipoCategoriaEnum tipo;
 	
@@ -34,8 +39,13 @@ public class Categoria {
 	@CreationTimestamp
 	private LocalDateTime dtCriacao;
 	
+	
+	/*
+	 * TODO: Criar validação aqui, não deve ser possível criar categorias com o id de adm
+	 * TODO: Criar validação aqui, não pode ir sem criador
+	 */
 	@OneToOne
-	@JoinColumn(name = "usuario_criador", nullable = false)
+	@JoinColumn(name = "usuario_criador", nullable = true)
 	@JsonIgnore
 	private Usuario criador;
 

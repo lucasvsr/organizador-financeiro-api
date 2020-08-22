@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -22,20 +24,25 @@ public class Transacao {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "conta", nullable = false)
 	private Conta conta;
 	
+	@NotBlank
 	@Column(length = 100, nullable = false)
 	private String descricao;
 	
+	@NotBlank
 	@Column(nullable = false)
 	private BigDecimal valor;
 	
+	@NotNull
 	@OneToOne
 	@JoinColumn(name = "categoria")
 	private Categoria categoria;
 	
+	@NotBlank
 	@Column(name = "dt_transacao")
 	private LocalDate dtTransacao;
 	
