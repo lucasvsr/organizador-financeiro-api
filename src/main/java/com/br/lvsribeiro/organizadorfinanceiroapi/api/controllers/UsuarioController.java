@@ -86,7 +86,7 @@ public class UsuarioController {
 	
 	@PutMapping("/{id}/contas")
 	@ResponseStatus(HttpStatus.OK)
-	public Conta adicionarConta(@PathVariable Long id, @RequestBody @Valid Conta conta) {
+	public Conta adicionarConta(@PathVariable Long id, @RequestBody Conta conta) {
 		
 		return service.addConta(conta, id);
 		

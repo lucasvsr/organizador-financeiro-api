@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -40,7 +39,7 @@ public class Conta {
 	@JoinColumn(name = "banco")
 	private Banco banco;
 	
-	@NotBlank
+	//@NotBlank
 	@Column(nullable = false)
 	private BigDecimal saldo;
 	

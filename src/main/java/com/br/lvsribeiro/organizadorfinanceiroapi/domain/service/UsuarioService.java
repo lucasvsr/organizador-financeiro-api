@@ -46,6 +46,7 @@ public class UsuarioService {
 	public Conta addConta(Conta conta, Long id) {
 		
 		Usuario usuario = buscar(id);
+		System.out.println(usuario);
 		conta.setDono(usuario);
 		
 		return contaService.salvar(conta);
